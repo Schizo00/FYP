@@ -1,11 +1,11 @@
 import numpy as np
 import pandas as pd
-import open3d as o3d
+# import open3d as o3d
 import tensorflow as tf
 from tensorflow.keras.utils import Sequence
 
 class VoxDataset(tf.keras.utils.Sequence):
-    def __init__(self, emb_max=113.4636, mesh_max=139.8999, transform=None, limit=None, indices=[]):
+    def __init__(self, emb_max=226.92715, mesh_max=279.79984, transform=None, limit=None, indices=[], ids=[]):
         self.emb_max = emb_max
         self.mesh_max = mesh_max
         # self.path = path
@@ -17,6 +17,10 @@ class VoxDataset(tf.keras.utils.Sequence):
         if len(indices) != 0:
             if type(indices) is list:
                 self.annotations = self.annotations.iloc[indices].reset_index()
+
+        if len(ids) != 0:
+            if type(indices) is list:
+                self.annotations = self.annotations[self.annotations['id'].isin(ids)].reset_index()
 
 
 
@@ -67,6 +71,12 @@ class VoxDataset(tf.keras.utils.Sequence):
         pcd = np.load(mesh_path)
         pcd = pcd.flatten()
         return pcd
+
+
+    def get_ids(self):
+        print(len(self.annotations))
+        return list(set(self.annotations['id']))
+    
 
     @staticmethod
     def to_mesh_points(points):
